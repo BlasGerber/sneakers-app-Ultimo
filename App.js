@@ -1,20 +1,58 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AuthProvider } from './context/AuthContext';
+import { AuthContext } from './context/AuthContext';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import HomeScreen from './screens/HomeScreen';
+import SearchScreen from './screens/SearchScreen';
+import UserScreen from './screens/UserScreen';
+import FavScreen from './screens/FavScreen';
+import ProductScreen from './screens/ProductScreen';
+import ShopKartScreen from './screens/ShopKartScreen';
+import { ProductProvider } from './context/ProductContext';
+
+const Stack = createStackNavigator();
+
+function AppNavigator(){
+  const { status } = useContext(AuthContext)
+  
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        cardStyle: {
+          backgroundColor: 'white'
+        }
+      }}>
+      {
+        status !== "authenticated" ? (
+          <>
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+          </>
+        ) :
+        (
+          <>
+            <Stack.Screen name="Home" component={HomeScreen}/>
+            <Stack.Screen name="Search" component={SearchScreen}/>
+            <Stack.Screen name="User" component={UserScreen}/>
+          </>
+        )
+      }
+    </Stack.Navigator>
+  )
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AuthProvider>
+      <ProductProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </ProductProvider>  
+    </AuthProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
